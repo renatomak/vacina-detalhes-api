@@ -1,0 +1,43 @@
+# Maven / Java build output
+/target/
+**/target/
+
+# Explicitly ensure compiled classes are never committed
+/target/classes/
+**/target/classes/
+
+# Packaged artifacts
+*.jar
+*.war
+*.ear
+
+# Logs and runtime files
+*.log
+logs/
+*.pid
+*.seed
+*.tmp
+*.swp
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Environment and local secrets
+.env
+.env.*
+*.local
+
+# Local Spring profile for developer machine (contains local credentials)
+src/main/resources/application-local.yml
+

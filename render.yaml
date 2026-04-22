@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: vacina-detalhes-api
+    env: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /v3/api-docs
+    envVars:
+      - key: PORT
+        value: "8083"
+      - key: SEARCH_NOME_LIMIT
+        value: "50"
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: DB_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+

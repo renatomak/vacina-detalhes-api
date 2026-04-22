@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://10.52.31.100:5432/goiania_saude
+    username: sictec_sms
+    password: sictec_sms
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 30000
+
+server:
+  port: 8083
+
+app:
+  search:
+    nome-limit: 50
+  cors:
+    allowed-origins: http://localhost:5173
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+

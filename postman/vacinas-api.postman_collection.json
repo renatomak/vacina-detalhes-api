@@ -1,0 +1,135 @@
+{
+  "info": {
+    "name": "Vacinas App API",
+    "description": "Colecao Postman para a API de consulta de pacientes e vacinas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "query",
+      "value": "123.456.789-01"
+    },
+    {
+      "key": "pacienteId",
+      "value": "1"
+    },
+    {
+      "key": "idAplicacao",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health - Swagger Docs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/v3/api-docs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "v3",
+            "api-docs"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Pacientes",
+      "item": [
+        {
+          "name": "Buscar por Query (CPF ou Nome)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/search?query={{query}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "{{query}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar Paciente por Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "{{pacienteId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Listar Vacinas por Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/pacientes/{{pacienteId}}/vacinas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "pacientes",
+                "{{pacienteId}}",
+                "vacinas"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vacinas",
+      "item": [
+        {
+          "name": "Detalhar Aplicacao por Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vacinas/aplicacoes/{{idAplicacao}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vacinas",
+                "aplicacoes",
+                "{{idAplicacao}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
