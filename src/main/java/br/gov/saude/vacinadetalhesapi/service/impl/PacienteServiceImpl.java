@@ -45,10 +45,32 @@ public class PacienteServiceImpl implements PacienteService {
     }
 
     @Override
+    public PacienteDTO buscarPorCpf(String cpf) {
+        if (cpf == null || cpf.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O parametro cpf e obrigatorio.");
+        }
+        String cpfSemMascara = cpf.replaceAll("\\D", "");
+        if (cpfSemMascara.length() != 11) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CPF invalido.");
+        }
+        return pacienteRepository.buscarDetalhePorCpf(cpfSemMascara)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Paciente nao encontrado para o CPF informado."));
+    }
+
+    @Override
+    public List<PacienteResumoDTO> buscarPorNome(String nome) {
+        if (nome == null || nome.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O parametro nome e obrigatorio.");
+        }
+        String nomeNormalizado = nome.trim();
+        return pacienteRepository.buscarResumoPorNome(nomeNormalizado, limiteBuscaNome);
+    }
+
+    @Override
     public PacienteDTO buscarPorId(Long id) {
         return pacienteRepository.buscarDetalhePorId(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Paciente nao encontrado para o id informado."));
     }
 }
-

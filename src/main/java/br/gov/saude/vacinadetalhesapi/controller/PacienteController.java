@@ -2,7 +2,6 @@ package br.gov.saude.vacinadetalhesapi.controller;
 
 import br.gov.saude.vacinadetalhesapi.dto.PacienteDTO;
 import br.gov.saude.vacinadetalhesapi.dto.PacienteResumoDTO;
-import br.gov.saude.vacinadetalhesapi.service.PacienteSearchResult;
 import br.gov.saude.vacinadetalhesapi.service.PacienteService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,15 +22,15 @@ public class PacienteController {
         this.pacienteService = pacienteService;
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<?> buscarPorQuery(@RequestParam("query") String query) {
+    @GetMapping("/search/cpf")
+    public ResponseEntity<PacienteDTO> buscarPorCpf(@RequestParam("cpf") String cpf) {
+        PacienteDTO paciente = pacienteService.buscarPorCpf(cpf);
+        return ResponseEntity.ok(paciente);
+    }
 
-        PacienteSearchResult resultado = pacienteService.buscarPorQuery(query);
-        if (resultado.buscaPorCpf()) {
-            PacienteDTO paciente = resultado.paciente();
-            return ResponseEntity.ok(paciente);
-        }
-        List<PacienteResumoDTO> pacientes = resultado.pacientes();
+    @GetMapping("/search/nome")
+    public ResponseEntity<List<PacienteResumoDTO>> buscarPorNome(@RequestParam("nome") String nome) {
+        List<PacienteResumoDTO> pacientes = pacienteService.buscarPorNome(nome);
         return ResponseEntity.ok(pacientes);
     }
 

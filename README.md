@@ -48,6 +48,37 @@ A aplicacao le configuracao de `src/main/resources/application.yml` e permite ov
 mvn clean package
 ```
 
+## Gerar executavel Windows (frontend + backend)
+
+Para empacotar o frontend (`patient-passport`) junto com esta API em um unico executavel Windows, use os scripts em `scripts/`.
+
+Pre-requisitos:
+
+- Java (JDK com `jpackage`)
+- Maven (`mvn` no PATH)
+- Node.js + npm
+
+Fluxo automatico (build front, copia para `static`, build jar e gera `.exe`):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\package-fullstack-exe.ps1
+```
+
+Quando o WiX nao estiver disponivel, o processo gera:
+
+- `dist-exe/` com o `app-image`
+- `dist-single/VacinaDetalhesApi-Portable.exe` com um unico executavel autoextrator
+
+Somente gerar o jar unificado (sem `.exe`):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\build-fullstack-jar.ps1
+```
+
+Saida do executavel:
+
+- pasta `dist-exe/` na raiz do projeto.
+
 ## Rodar local (sem Docker)
 
 ```bash

@@ -46,26 +46,24 @@ class ApiIntegrationTest {
 
     @Test
     void deveBuscarPacientePorCpfViaEndpointSearch() throws Exception {
-        when(pacienteService.buscarPorQuery(eq("12345678901")))
-                .thenReturn(PacienteSearchResult.resultadoCpf(pacienteExemplo()));
+        when(pacienteService.buscarPorCpf(eq("12345678901")))
+            .thenReturn(pacienteExemplo());
 
-        mockMvc.perform(get("/api/pacientes/search").param("query", "12345678901"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.nome").value("Maria"));
+        mockMvc.perform(get("/api/pacientes/search/cpf").param("cpf", "12345678901"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.nome").value("Maria"));
     }
 
     @Test
     void deveBuscarPacientesPorNomeViaEndpointSearch() throws Exception {
-        when(pacienteService.buscarPorQuery(eq("maria")))
-                .thenReturn(PacienteSearchResult.resultadoNome(List.of(
-                        new PacienteResumoDTO(1L, "Maria", "123", LocalDate.of(1990, 1, 1))
-                )));
+        when(pacienteService.buscarPorNome(eq("maria")))
+            .thenReturn(List.of(new PacienteResumoDTO(1L, "Maria", "123", LocalDate.of(1990, 1, 1))));
 
-        mockMvc.perform(get("/api/pacientes/search").param("query", "maria"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].nome").value("Maria"));
+        mockMvc.perform(get("/api/pacientes/search/nome").param("nome", "maria"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].id").value(1))
+            .andExpect(jsonPath("$[0].nome").value("Maria"));
     }
 
     @Test
@@ -149,6 +147,55 @@ class ApiIntegrationTest {
                 false, false, false, false, "IM", "Braco", "Joao", "CRM",
                 "1234", "999", "UBS A", "1234567", "OK", "uuid"
         );
+    }
+
+    @Test
+    void deveBuscarPacientePorCpfViaNovoEndpoint() throws Exception {
+        when(pacienteService.buscarPorCpf(eq("12345678901")))
+            .thenReturn(pacienteExemplo());
+
+        mockMvc.perform(get("/api/pacientes/search/cpf").param("cpf", "12345678901"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.nome").value("Maria"));
+    }
+
+    @Test
+    void deveBuscarPacientesPorNomeViaNovoEndpoint() throws Exception {
+        when(pacienteService.buscarPorNome(eq("maria")))
+            .thenReturn(List.of(new PacienteResumoDTO(1L, "Maria", "123", LocalDate.of(1990, 1, 1))));
+
+        mockMvc.perform(get("/api/pacientes/search/nome").param("nome", "maria"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].id").value(1))
+            .andExpect(jsonPath("$[0].nome").value("Maria"));
+    }
+
+    @Test
+    void deveRetornar404QuandoBuscarPorCpfNaoEncontrado() throws Exception {
+        when(pacienteService.buscarPorCpf(eq("00000000000")))
+            .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Paciente nao encontrado para o CPF informado."));
+
+        mockMvc.perform(get("/api/pacientes/search/cpf").param("cpf", "00000000000"))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deveRetornar400QuandoBuscarPorCpfInvalido() throws Exception {
+        when(pacienteService.buscarPorCpf(eq("123")))
+            .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "CPF invalido."));
+
+        mockMvc.perform(get("/api/pacientes/search/cpf").param("cpf", "123"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deveRetornar400QuandoBuscarPorNomeVazio() throws Exception {
+        when(pacienteService.buscarPorNome(eq(" ")))
+            .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "O parametro nome e obrigatorio."));
+
+        mockMvc.perform(get("/api/pacientes/search/nome").param("nome", " "))
+            .andExpect(status().isBadRequest());
     }
 }
 
