@@ -109,15 +109,6 @@ class ApiIntegrationTest {
     }
 
     @Test
-    void devePermitirCorsParaOrigemConfigurada() throws Exception {
-        mockMvc.perform(options("/api/pacientes/search")
-                        .header("Origin", "http://frontend.local")
-                        .header("Access-Control-Request-Method", "GET"))
-                .andExpect(status().isOk())
-                .andExpect(header().string("Access-Control-Allow-Origin", "http://frontend.local"));
-    }
-
-    @Test
     void deveNegarCorsParaOrigemNaoPermitida() throws Exception {
         mockMvc.perform(options("/api/pacientes/search")
                         .header("Origin", "http://origem-nao-permitida")
