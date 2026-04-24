@@ -29,9 +29,39 @@
         return results.stream().map(row -> new ProntuarioItem(
                 (String) row[2], // DT_REGISTRO
                 (String) row[0], // profissional
-                (String) row[6], // unidade
+                (String) row[5], // unidade
                 (String) row[4], // tipo
-                (String) row[8], // classificacao_risco
-                (String) row[7]  // HISTORICO_EVOLUCAO
+                (String) row[7], // classificacao_risco
+                limparHtml((String) row[6]) // HISTORICO_EVOLUCAO (conteudo limpo)
         )).toList();
     }
+
+    private String limparHtml(String texto) {
+        if (texto == null || texto.isBlank()) return "";
+
+        // 1. Substitui tags de quebra de linha por um marcador temporário para preservar a estrutura
+        // Isso evita que "triagem para consulta" e "PESO" fiquem na mesma linha.
+        String preparoTexto = texto
+            .replaceAll("(?i)<br\\s*/?>", "___BR___")
+            .replaceAll("(?i)</p>", "___BR___")
+            .replaceAll("(?i)</div>", "___BR___");
+
+        // 2. Usa o Jsoup para limpar todas as outras tags HTML residuais
+        String textoLimpo = org.jsoup.Jsoup.parse(preparoTexto).text();
+
+        // 3. Recupera as quebras de linha e trata espaços de entidades HTML (&nbsp;)
+        textoLimpo = textoLimpo.replace("___BR___", "\n");
+
+        // 4. REMOÇÃO DE EMOJIS (Opcional, mas recomendado para prontuário limpo)
+        // Este Regex remove caracteres das categorias 'So' (Other Symbol) e 'Cn' (Unassigned)
+        // Isso removerá 🍅, 🍒, 👶, ⚖️, etc.
+        textoLimpo = textoLimpo.replaceAll("[\\p{So}\\p{Cn}]", "");
+
+        // 5. Normalização de Espaços
+        // Converte múltiplos espaços em um só e remove espaços no início/fim de cada linha
+        return textoLimpo.replaceAll("(?m)^\\s+", "")
+            .replaceAll("(?m)\\s+$", "")
+            .replaceAll("[ ]{2,}", " ")
+            .trim();
+    }
+
