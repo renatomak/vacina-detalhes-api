@@ -103,6 +103,24 @@
               ]
             }
           }
+        },
+        {
+          "name": "Buscar Histórico de Prontuário por Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/prontuario/{{pacienteId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "prontuario",
+                "{{pacienteId}}"
+              ]
+            }
+          }
         }
       ]
     },
@@ -132,4 +150,3 @@
     }
   ]
 }
-
