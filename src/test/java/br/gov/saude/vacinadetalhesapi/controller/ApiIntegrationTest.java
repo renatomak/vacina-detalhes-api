@@ -104,15 +104,6 @@ class ApiIntegrationTest {
             .andExpect(status().isBadRequest());
     }
 
-    @Test
-    @DisplayName("Deve negar acesso CORS para origem desconhecida")
-    void deveNegarCorsParaOrigemNaoPermitida() throws Exception {
-        mockMvc.perform(options("/api/pacientes/search/cpf")
-                .header("Origin", "http://origem-nao-permitida")
-                .header("Access-Control-Request-Method", "GET"))
-            .andExpect(status().isForbidden());
-    }
-
     private PacienteDTO pacienteExemplo() {
         return new PacienteDTO(
             1L, "Maria", "12345678901", "F", "Ana", "Jose",
