@@ -32,7 +32,13 @@ public class SecurityConfig {
                 config.setAllowCredentials(true);
                 return config;
             }))
+            .headers(headers -> headers
+                .frameOptions(frame -> frame
+                    .sameOrigin()
+                )
+            )
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().permitAll()
             );
 
