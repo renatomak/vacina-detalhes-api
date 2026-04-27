@@ -147,6 +147,30 @@
           }
         }
       ]
+    },
+    {
+      "name": "Atendimentos",
+      "item": [
+        {
+          "name": "Listar Exames por Atendimento",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/atendimentos/1/exames",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "atendimentos",
+                "1",
+                "exames"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

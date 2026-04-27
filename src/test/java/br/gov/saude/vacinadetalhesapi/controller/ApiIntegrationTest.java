@@ -70,8 +70,8 @@ class ApiIntegrationTest {
 
         mockMvc.perform(get("/api/vacinas/aplicacoes/1"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.idAplicacao").value(1))
-            .andExpect(jsonPath("$.nomeVacina").value("Covid"));
+            .andExpect(jsonPath("$.id_aplicacao").value(1))
+            .andExpect(jsonPath("$.nome_vacina").value("Covid"));
     }
 
     @Test

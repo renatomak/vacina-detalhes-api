@@ -10,13 +10,12 @@ import java.time.LocalDate;
 
 @Component
 public class PacienteRowMapper {
-
     public RowMapper<PacienteDTO> detalhe() {
         return (rs, rowNum) -> new PacienteDTO(
                 rs.getLong("id"),
                 rs.getString("nome"),
                 rs.getString("cpf"),
-                rs.getString("sexo"),
+                PacienteRowMapper.converterSexo(rs.getString("sexo")),
                 rs.getString("nome_mae"),
                 rs.getString("nome_pai"),
                 toLocalDate(rs.getObject("data_nascimento")),
@@ -34,6 +33,15 @@ public class PacienteRowMapper {
                         rs.getString("uf")
                 )
         );
+    }
+
+    public static String converterSexo(String sexo) {
+        if (sexo == null) return "-";
+        return switch (sexo.trim().toUpperCase()) {
+            case "F" -> "FEMININO";
+            case "M" -> "MASCULINO";
+            default -> "-";
+        };
     }
 
     public RowMapper<PacienteResumoDTO> resumo() {
@@ -55,5 +63,3 @@ public class PacienteRowMapper {
         return null;
     }
 }
-
-

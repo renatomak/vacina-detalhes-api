@@ -6,15 +6,21 @@ import br.gov.saude.vacinadetalhesapi.service.ProntuarioService;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 
+import br.gov.saude.vacinadetalhesapi.dto.ProntuarioResponse;
+import br.gov.saude.vacinadetalhesapi.dto.PacienteDTO;
+import br.gov.saude.vacinadetalhesapi.service.PacienteService;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class ProntuarioServiceImpl implements ProntuarioService {
     private final ProntuarioRepositoryPort prontuarioRepositoryPort;
+    private final PacienteService pacienteService;
 
-    public ProntuarioServiceImpl(ProntuarioRepositoryPort prontuarioRepositoryPort) {
+    public ProntuarioServiceImpl(ProntuarioRepositoryPort prontuarioRepositoryPort, PacienteService pacienteService) {
         this.prontuarioRepositoryPort = prontuarioRepositoryPort;
+        this.pacienteService = pacienteService;
     }
 
     @Override
@@ -36,5 +42,10 @@ public class ProntuarioServiceImpl implements ProntuarioService {
         if (conteudo == null) return null;
         return Jsoup.parse(conteudo).text();
     }
-}
 
+    public ProntuarioResponse buscarProntuarioCompleto(Long pacienteId) {
+        PacienteDTO paciente = pacienteService.buscarPorId(pacienteId);
+        List<ProntuarioItem> atendimentos = buscarHistoricoPorPaciente(pacienteId);
+        return new ProntuarioResponse(paciente, atendimentos);
+    }
+}
