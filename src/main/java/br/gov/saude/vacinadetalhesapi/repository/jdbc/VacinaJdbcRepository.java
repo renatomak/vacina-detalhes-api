@@ -2,7 +2,9 @@ package br.gov.saude.vacinadetalhesapi.repository.jdbc;
 
 import br.gov.saude.vacinadetalhesapi.dto.VacinaDetalheDTO;
 import br.gov.saude.vacinadetalhesapi.dto.VacinaResumoDTO;
-import br.gov.saude.vacinadetalhesapi.mapper.VacinaRowMapper;
+import br.gov.saude.vacinadetalhesapi.mapper.VacinaRawRowMapper;
+import br.gov.saude.vacinadetalhesapi.mapper.VacinaMapper;
+import br.gov.saude.vacinadetalhesapi.mapper.VacinaRaw;
 import br.gov.saude.vacinadetalhesapi.repository.VacinaRepository;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -128,26 +130,31 @@ public class VacinaJdbcRepository implements VacinaRepository {
             """;
 
     private final JdbcTemplate jdbcTemplate;
-    private final VacinaRowMapper rowMapper;
+    private final VacinaRawRowMapper rawRowMapper;
+    private final VacinaMapper vacinaMapper;
 
-    public VacinaJdbcRepository(JdbcTemplate jdbcTemplate, VacinaRowMapper rowMapper) {
+    public VacinaJdbcRepository(JdbcTemplate jdbcTemplate, VacinaRawRowMapper rawRowMapper, VacinaMapper vacinaMapper) {
         this.jdbcTemplate = jdbcTemplate;
-        this.rowMapper = rowMapper;
+        this.rawRowMapper = rawRowMapper;
+        this.vacinaMapper = vacinaMapper;
     }
 
     @Override
     public List<VacinaResumoDTO> listarPorPacienteId(Long pacienteId) {
-        return jdbcTemplate.query(VACINAS_RESUMO_POR_PACIENTE_SQL, rowMapper.resumo(), pacienteId);
+        return jdbcTemplate.query(VACINAS_RESUMO_POR_PACIENTE_SQL, rawRowMapper.resumo(), pacienteId)
+                .stream()
+                .map(vacinaMapper::toVacinaResumoDTO)
+                .toList();
     }
 
     @Override
     public Optional<VacinaDetalheDTO> buscarDetalhePorAplicacaoId(Long idAplicacao) {
-        List<VacinaDetalheDTO> resultado = jdbcTemplate.query(
+        List<VacinaRaw> resultado = jdbcTemplate.query(
                 VACINA_DETALHE_POR_APLICACAO_SQL,
-                rowMapper.detalhe(),
+                rawRowMapper.detalhe(),
                 idAplicacao
         );
-        return resultado.stream().findFirst();
+        return resultado.stream().findFirst().map(vacinaMapper::toVacinaDetalheDTO);
     }
 }
 

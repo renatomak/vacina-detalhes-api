@@ -6,7 +6,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import org.springframework.stereotype.Repository;
-import org.jsoup.Jsoup;
 
 import java.util.List;
 
@@ -16,7 +15,6 @@ public class ProntuarioRepositoryAdapter implements ProntuarioRepositoryPort {
     @PersistenceContext
     private EntityManager entityManager;
 
-    // Setter para uso em testes
     void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }

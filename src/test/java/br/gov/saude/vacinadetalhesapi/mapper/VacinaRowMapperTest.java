@@ -5,13 +5,14 @@ import br.gov.saude.vacinadetalhesapi.dto.VacinaResumoDTO;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mapstruct.factory.Mappers;
 
 import java.sql.ResultSet;
 import java.time.LocalDate;
 
 class VacinaRowMapperTest {
-
-    private final VacinaRowMapper mapper = new VacinaRowMapper();
+    private final VacinaRawRowMapper rawRowMapper = new VacinaRawRowMapper();
+    private final VacinaMapper vacinaMapper = Mappers.getMapper(VacinaMapper.class);
 
     @Test
     void deveMapearResumoComDateSql() throws Exception {
@@ -23,7 +24,8 @@ class VacinaRowMapperTest {
         Mockito.when(rs.getString("estrategia")).thenReturn("Campanha");
         Mockito.when(rs.getString("status")).thenReturn("Aplicada");
 
-        VacinaResumoDTO dto = mapper.resumo().mapRow(rs, 1);
+        VacinaRaw raw = rawRowMapper.resumo().mapRow(rs, 1);
+        VacinaResumoDTO dto = vacinaMapper.toVacinaResumoDTO(raw);
 
         Assertions.assertEquals(10L, dto.idAplicacao());
         Assertions.assertEquals(LocalDate.of(2024, 5, 10), dto.dataAplicacao());
@@ -66,7 +68,8 @@ class VacinaRowMapperTest {
         Mockito.when(rs.getString("rnds_situacao")).thenReturn("OK");
         Mockito.when(rs.getString("rnds_uuid")).thenReturn("uuid");
 
-        VacinaDetalheDTO dto = mapper.detalhe().mapRow(rs, 1);
+        VacinaRaw raw = rawRowMapper.detalhe().mapRow(rs, 1);
+        VacinaDetalheDTO dto = vacinaMapper.toVacinaDetalheDTO(raw);
 
         Assertions.assertNull(dto.nrAtendimento());
         Assertions.assertNull(dto.doseCodigo());
@@ -84,7 +87,8 @@ class VacinaRowMapperTest {
         Mockito.when(rs.getObject("data_aplicacao")).thenReturn(java.sql.Date.valueOf("2024-01-01"));
         Mockito.when(rs.getBoolean(Mockito.anyString())).thenReturn(true);
 
-        VacinaDetalheDTO dto = mapper.detalhe().mapRow(rs, 1);
+        VacinaRaw raw = rawRowMapper.detalhe().mapRow(rs, 1);
+        VacinaDetalheDTO dto = vacinaMapper.toVacinaDetalheDTO(raw);
 
         Assertions.assertEquals(200L, dto.nrAtendimento());
         Assertions.assertEquals(2, dto.doseCodigo());
