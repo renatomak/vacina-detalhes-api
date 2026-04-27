@@ -2,7 +2,8 @@ package br.gov.saude.vacinadetalhesapi.repository.jdbc;
 
 import br.gov.saude.vacinadetalhesapi.dto.PacienteDTO;
 import br.gov.saude.vacinadetalhesapi.dto.PacienteResumoDTO;
-import br.gov.saude.vacinadetalhesapi.mapper.PacienteRowMapper;
+import br.gov.saude.vacinadetalhesapi.mapper.PacienteMapper;
+import br.gov.saude.vacinadetalhesapi.mapper.PacienteRaw;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -18,21 +19,20 @@ class PacienteJdbcRepositoryTest {
     @Test
     void deveBuscarDetalhePorCpf() {
         JdbcTemplate jdbcTemplate = Mockito.mock(JdbcTemplate.class);
-        PacienteRowMapper rowMapper = Mockito.mock(PacienteRowMapper.class);
-        RowMapper<PacienteDTO> detalheMapper = Mockito.mock(RowMapper.class);
-        Mockito.when(rowMapper.detalhe()).thenReturn(detalheMapper);
-
+        PacienteMapper mapper = Mockito.mock(PacienteMapper.class);
+        PacienteRaw raw = new PacienteRaw();
         PacienteDTO paciente = Mockito.mock(PacienteDTO.class);
-        Mockito.when(jdbcTemplate.query(Mockito.anyString(), Mockito.eq(detalheMapper), Mockito.eq("123")))
-                .thenReturn(List.of(paciente));
+        Mockito.when(jdbcTemplate.query(Mockito.anyString(), Mockito.<org.springframework.jdbc.core.RowMapper<PacienteRaw>>any(), Mockito.eq("123")))
+                .thenReturn(List.of(raw));
+        Mockito.when(mapper.toPacienteDTO(raw)).thenReturn(paciente);
 
-        PacienteJdbcRepository repository = new PacienteJdbcRepository(jdbcTemplate, rowMapper);
+        PacienteJdbcRepository repository = new PacienteJdbcRepository(jdbcTemplate, mapper);
 
         var resultado = repository.buscarDetalhePorCpf("123");
 
         Assertions.assertTrue(resultado.isPresent());
         ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
-        Mockito.verify(jdbcTemplate).query(sqlCaptor.capture(), Mockito.eq(detalheMapper), Mockito.eq("123"));
+        Mockito.verify(jdbcTemplate).query(sqlCaptor.capture(), Mockito.<org.springframework.jdbc.core.RowMapper<PacienteRaw>>any(), Mockito.eq("123"));
         Assertions.assertTrue(sqlCaptor.getValue().contains("p.cpf = ?"));
     }
 
@@ -40,14 +40,11 @@ class PacienteJdbcRepositoryTest {
     @Test
     void deveBuscarDetalhePorIdVazio() {
         JdbcTemplate jdbcTemplate = Mockito.mock(JdbcTemplate.class);
-        PacienteRowMapper rowMapper = Mockito.mock(PacienteRowMapper.class);
-        RowMapper<PacienteDTO> detalheMapper = Mockito.mock(RowMapper.class);
-        Mockito.when(rowMapper.detalhe()).thenReturn(detalheMapper);
-
-        Mockito.when(jdbcTemplate.query(Mockito.anyString(), Mockito.eq(detalheMapper), Mockito.eq(1L)))
+        PacienteMapper mapper = Mockito.mock(PacienteMapper.class);
+        Mockito.when(jdbcTemplate.query(Mockito.anyString(), Mockito.<org.springframework.jdbc.core.RowMapper<PacienteRaw>>any(), Mockito.eq(1L)))
                 .thenReturn(List.of());
 
-        PacienteJdbcRepository repository = new PacienteJdbcRepository(jdbcTemplate, rowMapper);
+        PacienteJdbcRepository repository = new PacienteJdbcRepository(jdbcTemplate, mapper);
 
         var resultado = repository.buscarDetalhePorId(1L);
 
@@ -58,15 +55,12 @@ class PacienteJdbcRepositoryTest {
     @Test
     void deveBuscarResumoPorNome() {
         JdbcTemplate jdbcTemplate = Mockito.mock(JdbcTemplate.class);
-        PacienteRowMapper rowMapper = Mockito.mock(PacienteRowMapper.class);
-        RowMapper<PacienteResumoDTO> resumoMapper = Mockito.mock(RowMapper.class);
-        Mockito.when(rowMapper.resumo()).thenReturn(resumoMapper);
-
+        PacienteMapper mapper = Mockito.mock(PacienteMapper.class);
         PacienteResumoDTO resumo = Mockito.mock(PacienteResumoDTO.class);
-        Mockito.when(jdbcTemplate.query(Mockito.anyString(), Mockito.eq(resumoMapper), Mockito.eq("maria"), Mockito.eq(30)))
+        Mockito.when(jdbcTemplate.query(Mockito.anyString(), Mockito.<org.springframework.jdbc.core.RowMapper<PacienteResumoDTO>>any(), Mockito.eq("%maria%"), Mockito.eq(30)))
                 .thenReturn(List.of(resumo));
 
-        PacienteJdbcRepository repository = new PacienteJdbcRepository(jdbcTemplate, rowMapper);
+        PacienteJdbcRepository repository = new PacienteJdbcRepository(jdbcTemplate, mapper);
 
         var resultado = repository.buscarResumoPorNome("maria", 30);
 
