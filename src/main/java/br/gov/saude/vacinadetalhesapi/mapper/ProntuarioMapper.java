@@ -8,7 +8,7 @@ import java.util.*;
 @Mapper(componentModel = "spring")
 public interface ProntuarioMapper {
     @Mapping(target = "numeroAtendimento", source = "nrAtendimento")
-    @Mapping(target = "dataChegada", expression = "java(formatarData(raw.getDtChegada()))")
+    @Mapping(target = "dataChegada", expression = "java(formatarDataPtBr(raw.getDtChegada()))")
     @Mapping(target = "unidade", expression = "java(new UnidadeDTO(raw.getUnidadeNome(), raw.getUnidadeTelefone()))")
     @Mapping(target = "tipoAtendimento", source = "tipoAtendimento")
     @Mapping(target = "profissional", expression = "java(new ProfissionalDTO(raw.getProfissionalNome(), raw.getProfissionalRegistro(), raw.getProfissionalTipoConselho(), raw.getProfissionalCbo(), raw.getProfissionalCboDescricao()))")
@@ -16,7 +16,7 @@ public interface ProntuarioMapper {
     @Mapping(target = "registros", ignore = true)
     AtendimentoDTO toAtendimentoDTO(ProntuarioRaw raw);
 
-    @Mapping(target = "data", expression = "java(formatarData(raw.getRegistroData()))")
+    @Mapping(target = "data", expression = "java(formatarDataPtBr(raw.getRegistroData()))")
     @Mapping(target = "tipo", expression = "java(mapTipoRegistro(raw.getRegistroTipoId()))")
     @Mapping(target = "conteudo", expression = "java(mapConteudo(raw.getRegistroTipoId(), raw.getRegistroConteudo()))")
     RegistroDTO toRegistroDTO(ProntuarioRaw raw);
@@ -51,9 +51,9 @@ public interface ProntuarioMapper {
     }
 
 
-    default String formatarData(java.time.LocalDateTime data) {
+    default String formatarDataPtBr(java.time.LocalDateTime data) {
         if (data == null) return null;
-        return data.toLocalDate().toString();
+        return br.gov.saude.vacinadetalhesapi.util.FormatadorUtil.formatarData(data.toLocalDate());
     }
     default String mapTipoRegistro(Integer tipoId) {
         if (tipoId == null) return null;
@@ -76,4 +76,3 @@ public interface ProntuarioMapper {
 
 
 }
-
