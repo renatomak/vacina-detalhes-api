@@ -107,7 +107,7 @@ class ApiIntegrationTest {
     private PacienteDTO pacienteExemplo() {
         return new PacienteDTO(
             1L, "Maria", "12345678901", "F", "Ana", "Jose",
-            LocalDate.of(1990, 1, 1), "62999999999",
+            "01/01/1990", "62999999999",
             new EnderecoDTO("kw", "Rua", "A", "Casa", "10", "70000", "Centro", 1L, "Goiania", "GO")
         );
     }

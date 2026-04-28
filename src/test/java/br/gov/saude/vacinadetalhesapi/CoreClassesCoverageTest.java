@@ -19,7 +19,7 @@ class CoreClassesCoverageTest {
 
     @Test
     void deveCobrirFactoriesDePacienteSearchResult() {
-        PacienteDTO paciente = new PacienteDTO(1L, "Maria", "123", "F", "Ana", "Jose", LocalDate.now(), "62", null);
+        PacienteDTO paciente = new PacienteDTO(1L, "Maria", "123", "F", "Ana", "Jose", "28/04/2026", "62", null);
         PacienteResumoDTO resumo = new PacienteResumoDTO(1L, "Maria", "123", LocalDate.now());
 
         PacienteSearchResult porCpf = PacienteSearchResult.resultadoCpf(paciente);
@@ -32,7 +32,7 @@ class CoreClassesCoverageTest {
     @Test
     void deveCobrirRecordsEExceptions() {
         EnderecoDTO endereco = new EnderecoDTO("kw", "Rua", "A", "Casa", "10", "70000", "Centro", 1L, "Goiania", "GO");
-        PacienteDTO paciente = new PacienteDTO(1L, "Maria", "123", "F", "Ana", "Jose", LocalDate.of(1990, 1, 1), "62", endereco);
+        PacienteDTO paciente = new PacienteDTO(1L, "Maria", "123", "F", "Ana", "Jose", "01/01/1990", "62", endereco);
         PacienteResumoDTO pacienteResumo = new PacienteResumoDTO(1L, "Maria", "123", LocalDate.of(1990, 1, 1));
         VacinaResumoDTO vacinaResumo = new VacinaResumoDTO(1L, LocalDate.of(2024, 1, 1), "Covid", "Reforco", "Adulto", "Aplicada");
         VacinaDetalheDTO vacinaDetalhe = new VacinaDetalheDTO(

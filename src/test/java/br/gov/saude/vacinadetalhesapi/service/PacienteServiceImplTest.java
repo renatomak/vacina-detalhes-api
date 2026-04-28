@@ -139,7 +139,7 @@ class PacienteServiceImplTest {
                 "F",
                 "Ana",
                 "Jose",
-                LocalDate.of(1990, 1, 1),
+                "01/01/1990",
                 "62999999999",
                 new EnderecoDTO(null, null, null, null, null, null, null, null, null, null)
         );

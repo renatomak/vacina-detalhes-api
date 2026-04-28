@@ -16,7 +16,7 @@ class ProntuarioControllerTest {
     void deveRetornarHistoricoDoPaciente() {
         ProntuarioService prontuarioService = mock(ProntuarioService.class);
         ProntuarioItem item = new ProntuarioItem("01/01/2024 10:00:00", "Profissional", "Unidade", "Evolução", "Baixo", "Conteudo");
-        PacienteDTO paciente = new PacienteDTO(1L, "Nome", "CPF", "FEMININO", "Mae", null, java.time.LocalDate.of(2024, 6, 30), "(62) 99870-2201", null);
+        PacienteDTO paciente = new PacienteDTO(1L, "Nome", "CPF", "FEMININO", "Mae", null, "30/06/2024", "(62) 99870-2201", null);
         ProntuarioResponse prontuarioResponse = new ProntuarioResponse(paciente, List.of(item));
         when(prontuarioService.buscarProntuarioCompleto(1L)).thenReturn(prontuarioResponse);
         ProntuarioController controller = new ProntuarioController(prontuarioService);
