@@ -1,7 +1,8 @@
 package br.gov.saude.vacinadetalhesapi.repository;
 
-import br.gov.saude.vacinadetalhesapi.domain.ProntuarioItem;
 import br.gov.saude.vacinadetalhesapi.port.ProntuarioRepositoryPort;
+import br.gov.saude.vacinadetalhesapi.dto.AtendimentoDTO;
+import br.gov.saude.vacinadetalhesapi.mapper.ProntuarioMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -15,83 +16,66 @@ public class ProntuarioRepositoryAdapter implements ProntuarioRepositoryPort {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private final ProntuarioMapper prontuarioMapper;
+
+    public ProntuarioRepositoryAdapter(ProntuarioMapper prontuarioMapper) {
+        this.prontuarioMapper = prontuarioMapper;
+    }
+
     void setEntityManager(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
-    @Override
-    public List<ProntuarioItem> buscarHistoricoPorPaciente(Long pacienteId) {
+
+    public List<ProntuarioRaw> buscarProntuarioRawPorPaciente(Long pacienteId) {
         String sql = "SELECT " +
-            "CONCAT(p.nm_profissional,' - ',OE.SG_ORGAO_EMISSOR,': ',P.NR_REGISTRO,'  ',' CBO: (',TC.cd_cbo, ') ',TC.ds_cbo) AS profissional, " +
-            "ta.ds_tipo_atendimento as TIPO_ATEND, " +
-            "TO_CHAR(ep.dt_historico, 'DD/MM/YYYY HH24:MI:SS') AS DT_REGISTRO, " +
-            "a.nr_atendimento, " +
-            "CASE WHEN ap.dt_avaliacao IS NULL THEN 'Evolução' ELSE 'Avaliação' END AS tipo, " +
-            "e.descricao AS unidade, " +
-            "concat(ep.ds_prontuario,' ',ap.historico) as HISTORICO_EVOLUCAO, " +
-            "cr.descricao as classificacao_risco " +
-            "FROM atendimento a " +
-            "INNER JOIN usuario_cadsus uc ON uc.cd_usu_cadsus = a.cd_usu_cadsus " +
-            "INNER JOIN empresa e ON e.empresa = a.empresa " +
-            "LEFT JOIN atendimento_primario ap ON ap.nr_atendimento = a.nr_atendimento " +
-            "INNER join evolucao_prontuario ep on ep.nr_atendimento = a.nr_atendimento " +
-            "LEFT JOIN profissional p ON p.cd_profissional = a.cd_profissional " +
-            "LEFT JOIN tabela_cbo tc ON tc.cd_cbo = a.cd_cbo " +
-            "LEFT JOIN ORGAO_EMISSOR OE ON OE.CD_ORGAO_EMISSOR = P.cd_CON_CLASSE " +
-            "LEFT JOIN classificacao_atendimento ca ON ca.cd_cla_atendimento = a.cd_cla_atendimento " +
-            "LEFT JOIN classificacao_risco cr ON cr.cd_classificacao_risco = a.classificacao_risco " +
-            "left JOIN natureza_procura_tp_atendimento npta on npta.cd_nat_proc_tp_atendimento = a.cd_nat_proc_tp_atendimento  " +
-            "LEFT JOIN tipo_atendimento ta ON ta.cd_TP_atendimento = NPTA.cd_TP_atendimento " +
-            "WHERE uc.cd_usu_cadsus = :pacienteId AND a.status <> 2 " +
-            "ORDER BY ep.dt_historico\\:\\:date DESC, ep.dt_historico\\:\\:time ASC";
-
+                "a.nr_atendimento, a.dt_chegada, " +
+                "e.descricao AS unidade_nome, e.telefone AS unidade_telefone, " +
+                "ta.ds_tipo_atendimento, " +
+                "p.nm_profissional, p.nr_registro AS profissional_registro, " +
+                "oe.sg_orgao_emissor AS profissional_tipo_conselho, " +
+                "tc.cd_cbo AS profissional_cbo, tc.ds_cbo AS profissional_cbo_descricao, " +
+                "ap2.data AS registro_data, ap2.tipo_registro AS registro_tipo_id, " +
+                "ap2.descricao AS registro_conteudo, " +
+                "cr.descricao AS classificacao_risco_nome " +
+                "FROM atendimento a " +
+                "INNER JOIN empresa e ON e.empresa = a.empresa " +
+                "INNER JOIN atendimento_prontuario ap2 ON ap2.nr_atendimento = a.nr_atendimento " +
+                "LEFT JOIN profissional p ON p.cd_profissional = ap2.cd_profissional " +
+                "LEFT JOIN orgao_emissor oe ON oe.cd_orgao_emissor = p.cd_con_classe " +
+                "LEFT JOIN tabela_cbo tc ON tc.cd_cbo = ap2.cd_cbo " +
+                "LEFT JOIN classificacao_risco cr ON cr.cd_classificacao_risco = a.classificacao_risco " +
+                "LEFT JOIN natureza_procura_tp_atendimento npta ON npta.cd_nat_proc_tp_atendimento = a.cd_nat_proc_tp_atendimento " +
+                "LEFT JOIN tipo_atendimento ta ON ta.cd_tp_atendimento = npta.cd_tp_atendimento " +
+                "WHERE a.cd_usu_cadsus = :idPaciente AND a.status IN (1, 4, 5, 8, 9) " +
+                "ORDER BY a.dt_chegada DESC, ap2.data ASC";
         Query query = entityManager.createNativeQuery(sql);
-        query.setParameter("pacienteId", pacienteId);
-
+        query.setParameter("idPaciente", pacienteId);
         @SuppressWarnings("unchecked")
         List<Object[]> results = query.getResultList();
-
-        return results.stream().map(row -> new ProntuarioItem(
-            (String) row[2], // DT_REGISTRO
-            (String) row[0], // profissional
-            (String) row[5], // unidade
-            (String) row[4], // tipo
-            (String) row[7], // classificacao_risco
-            limparHtml((String) row[6]) // HISTORICO_EVOLUCAO (conteudo limpo)
-        )).toList();
+        return results.stream()
+            .map(row -> (ProntuarioRaw) new ProntuarioRawRecord(
+                row[0] != null ? ((Number) row[0]).longValue() : null,
+                row[1] != null ? (row[1] instanceof java.sql.Timestamp ? ((java.sql.Timestamp) row[1]).toLocalDateTime() : (java.time.LocalDateTime) row[1]) : null,
+                (String) row[2],
+                (String) row[3],
+                (String) row[4],
+                (String) row[5],
+                (String) row[6],
+                (String) row[7],
+                (String) row[8],
+                (String) row[9],
+                row[10] != null ? (row[10] instanceof java.sql.Timestamp ? ((java.sql.Timestamp) row[10]).toLocalDateTime() : (java.time.LocalDateTime) row[10]) : null,
+                row[11] != null ? ((Number) row[11]).intValue() : null,
+                (String) row[12],
+                (String) row[13]
+            ))
+            .toList();
     }
 
-    private String limparHtml(String texto) {
-        if (texto == null || texto.isBlank()) return "";
-
-        // 1. Preservar quebras de linha básicas
-        String preparoTexto = texto
-            .replaceAll("(?i)<br\\s*/?>", " ___BR___ ")
-            .replaceAll("(?i)</p>", " ___BR___ ")
-            .replaceAll("(?i)</div>", " ___BR___ ");
-
-        // 2. Jsoup para extrair o texto limpo de tags
-        String textoLimpo = org.jsoup.Jsoup.parseBodyFragment(preparoTexto).text();
-
-        // 3. RECUPERAR QUEBRAS E LIMPEZA PESADA (O PONTO CHAVE)
-        textoLimpo = textoLimpo.replace("___BR___", "\n");
-
-        /**
-         * REGEX EXPLICADA:
-         * [^\x00-\x7F\xA0-\xFF\n]
-         * ^ : Negação (manter o que estiver aqui)
-         * \x00-\x7F : Tabela ASCII padrão (letras, números, pontuação)
-         * \xA0-\xFF : Tabela Latin-1 (Acentos: á, é, í, ó, ú, ç, ã, etc)
-         * \n : Quebras de linha
-         * Tudo que não for isso (emojis, Variation Selectors \uFE0F, símbolos invisíveis) será removido.
-         */
-        textoLimpo = textoLimpo.replaceAll("[^\\x00-\\x7F\\xA0-\\xFF\\n]", "");
-
-        // 4. Normalização de espaços residuais
-        return textoLimpo
-            .replaceAll("(?m)^[ \t]+", "")    // Remove espaços no início das linhas
-            .replaceAll("(?m)[ \t]+$", "")    // Remove espaços no fim das linhas
-            .replaceAll("[ ]{2,}", " ")       // Transforma espaços duplos em simples
-            .trim();
+    @Override
+    public List<AtendimentoDTO> buscarAtendimentosComRegistrosPorPaciente(Long pacienteId) {
+        var raws = buscarProntuarioRawPorPaciente(pacienteId);
+        return prontuarioMapper.toProntuarioDTO(pacienteId, raws).atendimentos();
     }
 }

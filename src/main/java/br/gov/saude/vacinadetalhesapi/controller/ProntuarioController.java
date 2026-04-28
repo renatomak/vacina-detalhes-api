@@ -1,6 +1,6 @@
 package br.gov.saude.vacinadetalhesapi.controller;
 
-import br.gov.saude.vacinadetalhesapi.dto.ProntuarioResponse;
+import br.gov.saude.vacinadetalhesapi.dto.ProntuarioEstruturadoResponse;
 import br.gov.saude.vacinadetalhesapi.service.ProntuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +18,8 @@ public class ProntuarioController {
     }
 
     @GetMapping("/{pacienteId}")
-    public ResponseEntity<ProntuarioResponse> buscarHistoricoPorPaciente(@PathVariable Long pacienteId) {
-        ProntuarioResponse response = prontuarioService.buscarProntuarioCompleto(pacienteId);
+    public ResponseEntity<ProntuarioEstruturadoResponse> buscarProntuarioEstruturado(@PathVariable Long pacienteId) {
+        ProntuarioEstruturadoResponse response = prontuarioService.buscarProntuarioEstruturado(pacienteId);
         return ResponseEntity.ok(response);
     }
 }

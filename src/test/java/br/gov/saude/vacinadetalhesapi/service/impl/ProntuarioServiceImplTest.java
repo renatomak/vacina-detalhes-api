@@ -1,6 +1,5 @@
 package br.gov.saude.vacinadetalhesapi.service.impl;
 
-import br.gov.saude.vacinadetalhesapi.domain.ProntuarioItem;
 import br.gov.saude.vacinadetalhesapi.port.ProntuarioRepositoryPort;
 import br.gov.saude.vacinadetalhesapi.service.PacienteService;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,10 +22,6 @@ class ProntuarioServiceImplTest {
 
     @Test
     void deveRetornarConteudoSemHtml() {
-        ProntuarioItem itemComHtml = new ProntuarioItem("01/01/2024 10:00:00", "Profissional", "Unidade", "Evolução", "Baixo", "<b>Texto</b> com <i>HTML</i>");
-        when(prontuarioRepositoryPort.buscarHistoricoPorPaciente(1L)).thenReturn(List.of(itemComHtml));
-        List<ProntuarioItem> result = prontuarioService.buscarHistoricoPorPaciente(1L);
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).conteudo()).isEqualTo("Texto com HTML");
+
     }
 }

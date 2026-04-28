@@ -1,22 +1,20 @@
 package br.gov.saude.vacinadetalhesapi.service.impl;
 
-import br.gov.saude.vacinadetalhesapi.domain.ProntuarioItem;
 import br.gov.saude.vacinadetalhesapi.port.ProntuarioRepositoryPort;
 import br.gov.saude.vacinadetalhesapi.service.ProntuarioService;
-import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 
-import br.gov.saude.vacinadetalhesapi.dto.ProntuarioResponse;
-import br.gov.saude.vacinadetalhesapi.dto.PacienteDTO;
 import br.gov.saude.vacinadetalhesapi.service.PacienteService;
+import br.gov.saude.vacinadetalhesapi.dto.ProntuarioEstruturadoResponse;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class ProntuarioServiceImpl implements ProntuarioService {
     private final ProntuarioRepositoryPort prontuarioRepositoryPort;
     private final PacienteService pacienteService;
+    private static final Logger log = LoggerFactory.getLogger(ProntuarioServiceImpl.class);
 
     public ProntuarioServiceImpl(ProntuarioRepositoryPort prontuarioRepositoryPort, PacienteService pacienteService) {
         this.prontuarioRepositoryPort = prontuarioRepositoryPort;
@@ -24,28 +22,15 @@ public class ProntuarioServiceImpl implements ProntuarioService {
     }
 
     @Override
-    public List<ProntuarioItem> buscarHistoricoPorPaciente(Long pacienteId) {
-        List<ProntuarioItem> itens = prontuarioRepositoryPort.buscarHistoricoPorPaciente(pacienteId);
-        return itens.stream()
-                .map(item -> new ProntuarioItem(
-                        item.dataRegistro(),
-                        item.profissional(),
-                        item.unidade(),
-                        item.tipoRegistro(),
-                        item.classificacaoRisco(),
-                        limparHtml(item.conteudo())
-                ))
-                .collect(Collectors.toList());
-    }
-
-    private String limparHtml(String conteudo) {
-        if (conteudo == null) return null;
-        return Jsoup.parse(conteudo).text();
-    }
-
-    public ProntuarioResponse buscarProntuarioCompleto(Long pacienteId) {
-        PacienteDTO paciente = pacienteService.buscarPorId(pacienteId);
-        List<ProntuarioItem> atendimentos = buscarHistoricoPorPaciente(pacienteId);
-        return new ProntuarioResponse(paciente, atendimentos);
+    public ProntuarioEstruturadoResponse buscarProntuarioEstruturado(Long pacienteId) {
+        try {
+            var paciente = pacienteService.buscarPorId(pacienteId);
+            var atendimentos = prontuarioRepositoryPort.buscarAtendimentosComRegistrosPorPaciente(pacienteId);
+            if (atendimentos == null) atendimentos = java.util.Collections.emptyList();
+            return new ProntuarioEstruturadoResponse(paciente, atendimentos);
+        } catch (Exception e) {
+            log.error("Erro ao buscar prontuário estruturado para paciente {}: {}", pacienteId, e.getMessage(), e);
+            throw e;
+        }
     }
 }

@@ -1,9 +1,8 @@
 package br.gov.saude.vacinadetalhesapi.port;
 
-import br.gov.saude.vacinadetalhesapi.domain.ProntuarioItem;
+import br.gov.saude.vacinadetalhesapi.dto.AtendimentoDTO;
 import java.util.List;
 
 public interface ProntuarioRepositoryPort {
-    List<ProntuarioItem> buscarHistoricoPorPaciente(Long pacienteId);
+    List<AtendimentoDTO> buscarAtendimentosComRegistrosPorPaciente(Long pacienteId);
 }
-
