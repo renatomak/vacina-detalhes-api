@@ -9,5 +9,7 @@ public record AtendimentoDTO(
     String tipoAtendimento,
     ProfissionalDTO profissional,
     String classificacaoRisco,
+    Boolean possuiAih,
+    AihDetalhesDTO aihDetalhes,
     List<RegistroDTO> registros
 ) {}

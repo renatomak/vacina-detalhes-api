@@ -4,19 +4,23 @@ import br.gov.saude.vacinadetalhesapi.dto.*;
 import br.gov.saude.vacinadetalhesapi.repository.ProntuarioRaw;
 import org.mapstruct.*;
 import java.util.*;
+import java.time.format.DateTimeFormatter;
 
 @Mapper(componentModel = "spring")
 public interface ProntuarioMapper {
+
     @Mapping(target = "numeroAtendimento", source = "nrAtendimento")
-    @Mapping(target = "dataChegada", expression = "java(formatarDataPtBr(raw.getDtChegada()))")
+    @Mapping(target = "dataChegada", expression = "java(formatarDataIso(raw.getDtChegada()))")
     @Mapping(target = "unidade", expression = "java(new UnidadeDTO(raw.getUnidadeNome(), raw.getUnidadeTelefone()))")
     @Mapping(target = "tipoAtendimento", source = "tipoAtendimento")
     @Mapping(target = "profissional", expression = "java(new ProfissionalDTO(raw.getProfissionalNome(), raw.getProfissionalRegistro(), raw.getProfissionalTipoConselho(), raw.getProfissionalCbo(), raw.getProfissionalCboDescricao()))")
     @Mapping(target = "classificacaoRisco", source = "classificacaoRiscoNome")
+    @Mapping(target = "possuiAih", source = "possuiAih")
+    @Mapping(target = "aihDetalhes", expression = "java(mapAihDetalhes(raw))")
     @Mapping(target = "registros", ignore = true)
     AtendimentoDTO toAtendimentoDTO(ProntuarioRaw raw);
 
-    @Mapping(target = "data", expression = "java(formatarDataPtBr(raw.getRegistroData()))")
+    @Mapping(target = "data", expression = "java(formatarDataIso(raw.getRegistroData()))")
     @Mapping(target = "tipo", expression = "java(mapTipoRegistro(raw.getRegistroTipoId()))")
     @Mapping(target = "conteudo", expression = "java(mapConteudo(raw.getRegistroTipoId(), raw.getRegistroConteudo()))")
     RegistroDTO toRegistroDTO(ProntuarioRaw raw);
@@ -24,39 +28,58 @@ public interface ProntuarioMapper {
     default ProntuarioDTO toProntuarioDTO(Long pacienteId, List<ProntuarioRaw> raws) {
         Map<Long, AtendimentoDTO> atendimentoMap = new LinkedHashMap<>();
         Map<Long, List<RegistroDTO>> registrosMap = new HashMap<>();
+
         for (ProntuarioRaw raw : raws) {
             Long nrAtendimento = raw.getNrAtendimento();
+
             if (!atendimentoMap.containsKey(nrAtendimento)) {
-                AtendimentoDTO atendimento = toAtendimentoDTO(raw);
-                atendimentoMap.put(nrAtendimento, atendimento);
+                atendimentoMap.put(nrAtendimento, toAtendimentoDTO(raw));
                 registrosMap.put(nrAtendimento, new ArrayList<>());
             }
-            registrosMap.get(nrAtendimento).add(toRegistroDTO(raw));
+
+            // Adiciona o registro clínico apenas se houver data e conteúdo (evita registros vazios de cabeçalhos de internação)
+            if (raw.getRegistroData() != null) {
+                registrosMap.get(nrAtendimento).add(toRegistroDTO(raw));
+            }
         }
-        List<AtendimentoDTO> atendimentos = new ArrayList<>();
-        for (Long nrAtendimento : atendimentoMap.keySet()) {
-            AtendimentoDTO atendimento = atendimentoMap.get(nrAtendimento);
-            List<RegistroDTO> registros = registrosMap.get(nrAtendimento);
-            atendimentos.add(new AtendimentoDTO(
-                atendimento.numeroAtendimento(),
-                atendimento.dataChegada(),
-                atendimento.unidade(),
-                atendimento.tipoAtendimento(),
-                atendimento.profissional(),
-                atendimento.classificacaoRisco(),
-                registros
-            ));
-        }
-        return new ProntuarioDTO(pacienteId, atendimentos);
+
+        List<AtendimentoDTO> atendimentosFinal = atendimentoMap.values().stream()
+            .map(atend -> new AtendimentoDTO(
+                atend.numeroAtendimento(),
+                atend.dataChegada(),
+                atend.unidade(),
+                atend.tipoAtendimento(),
+                atend.profissional(),
+                atend.classificacaoRisco(),
+                atend.possuiAih(),
+                atend.aihDetalhes(),
+                registrosMap.get(atend.numeroAtendimento())
+            ))
+            .toList();
+
+        return new ProntuarioDTO(pacienteId, atendimentosFinal);
     }
 
+    default AihDetalhesDTO mapAihDetalhes(ProntuarioRaw raw) {
+        if (raw.getPossuiAih() == null || !raw.getPossuiAih()) {
+            return null;
+        }
+        return new AihDetalhesDTO(
+            formatarDataIso(raw.getAihDataCadastro()),
+            raw.getAihPrincipaisSinais(),
+            raw.getAihCondicoesInternacao(),
+            raw.getAihPrincipaisResultados(),
+            raw.getAihDiagnosticoInicial()
+        );
+    }
 
-    default String formatarDataPtBr(java.time.LocalDateTime data) {
+    default String formatarDataIso(java.time.LocalDateTime data) {
         if (data == null) return null;
-        return br.gov.saude.vacinadetalhesapi.util.FormatadorUtil.formatarData(data.toLocalDate());
+        return data.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
     }
+
     default String mapTipoRegistro(Integer tipoId) {
-        if (tipoId == null) return null;
+        if (tipoId == null) return "Indefinido";
         return switch (tipoId) {
             case 1 -> "Avaliacao";
             case 2 -> "Evolucao";
@@ -64,6 +87,7 @@ public interface ProntuarioMapper {
             default -> "Outro";
         };
     }
+
     default ConteudoDTO mapConteudo(Integer tipoId, String conteudo) {
         if (tipoId == null) return new ConteudoDTO(null, null, null);
         return switch (tipoId) {
@@ -73,6 +97,4 @@ public interface ProntuarioMapper {
             default -> new ConteudoDTO(null, null, null);
         };
     }
-
-
 }

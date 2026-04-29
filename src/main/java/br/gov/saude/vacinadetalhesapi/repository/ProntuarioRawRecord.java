@@ -16,7 +16,14 @@ public record ProntuarioRawRecord(
     LocalDateTime registroData,
     Integer registroTipoId,
     String registroConteudo,
-    String classificacaoRiscoNome
+    String classificacaoRiscoNome,
+    // Novos campos da AIH
+    LocalDateTime aihDataCadastro,
+    String aihPrincipaisSinais,
+    String aihCondicoesInternacao,
+    String aihPrincipaisResultados,
+    String aihDiagnosticoInicial,
+    Boolean possuiAih
 ) implements ProntuarioRaw {
     @Override public Long getNrAtendimento() { return nrAtendimento; }
     @Override public LocalDateTime getDtChegada() { return dtChegada; }
@@ -32,4 +39,10 @@ public record ProntuarioRawRecord(
     @Override public Integer getRegistroTipoId() { return registroTipoId; }
     @Override public String getRegistroConteudo() { return registroConteudo; }
     @Override public String getClassificacaoRiscoNome() { return classificacaoRiscoNome; }
+    @Override public LocalDateTime getAihDataCadastro() { return aihDataCadastro; }
+    @Override public String getAihPrincipaisSinais() { return aihPrincipaisSinais; }
+    @Override public String getAihCondicoesInternacao() { return aihCondicoesInternacao; }
+    @Override public String getAihPrincipaisResultados() { return aihPrincipaisResultados; }
+    @Override public String getAihDiagnosticoInicial() { return aihDiagnosticoInicial; }
+    @Override public Boolean getPossuiAih() { return possuiAih; }
 }
