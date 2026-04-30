@@ -22,12 +22,12 @@ class VacinaServiceImplTest {
         VacinaService service = new VacinaServiceImpl(repository);
 
         Mockito.when(repository.listarPorPacienteId(10L))
-                .thenReturn(List.of(new VacinaResumoDTO(1L, LocalDate.of(2024, 1, 10), "Covid", "Reforco", "Adulto", "Aplicada")));
+                .thenReturn(List.of(new VacinaResumoDTO(1L, LocalDate.of(2024, 1, 10), "Covid", "Reforco", "Adulto", "Pfizer", "UBS Central", "Joao Profissional")));
 
         List<VacinaResumoDTO> vacinas = service.listarPorPacienteId(10L);
 
         Assertions.assertEquals(1, vacinas.size());
-        Assertions.assertEquals("Covid", vacinas.get(0).nomeVacina());
+        Assertions.assertEquals("Covid", vacinas.get(0).vacina());
     }
 
     @Test
@@ -64,5 +64,3 @@ class VacinaServiceImplTest {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     }
 }
-
-

@@ -10,10 +10,12 @@ public class VacinaRawRowMapper {
             VacinaRaw raw = new VacinaRaw();
             raw.idAplicacao = rs.getLong("id_aplicacao");
             raw.dataAplicacao = rs.getObject("data_aplicacao");
-            raw.nomeVacina = rs.getString("nome_vacina");
+            raw.vacina = rs.getString("vacina");
             raw.dose = rs.getString("dose");
             raw.estrategia = rs.getString("estrategia");
-            raw.status = rs.getString("status");
+            raw.laboratorio = rs.getString("laboratorio");
+            raw.estabelecimento = rs.getString("estabelecimento");
+            raw.profissional = rs.getString("profissional");
             return raw;
         };
     }
@@ -58,4 +60,3 @@ public class VacinaRawRowMapper {
         };
     }
 }
-

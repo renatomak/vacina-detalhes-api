@@ -16,38 +16,34 @@ import java.util.Optional;
 public class VacinaJdbcRepository implements VacinaRepository {
 
     private static final String VACINAS_RESUMO_POR_PACIENTE_SQL = """
-            SELECT
-                va.cd_vac_aplicacao AS id_aplicacao,
-                va.dt_aplicacao::date AS data_aplicacao,
-                COALESCE(tv.ds_vacina, va.ds_vacina) AS nome_vacina,
-                CASE va.cd_doses
-                    WHEN 1 THEN '1a Dose'
-                    WHEN 2 THEN '2a Dose'
-                    WHEN 3 THEN '3a Dose'
-                    WHEN 4 THEN '4a Dose'
-                    WHEN 5 THEN 'Dose Unica'
-                    WHEN 6 THEN 'Reforco'
-                    WHEN 7 THEN '1o Reforco'
-                    WHEN 8 THEN '2o Reforco'
-                    WHEN 9 THEN 'Dose Unica'
-                    WHEN 10 THEN 'Dose Inicial'
-                    WHEN 38 THEN 'Reforco'
-                    ELSE va.cd_doses::text
-                END AS dose,
-                cale.ds_calendario AS estrategia,
-                CASE va.status
-                    WHEN 0 THEN 'Aplicada'
-                    WHEN 1 THEN 'Aprazada'
-                    WHEN 2 THEN 'Cancelada'
-                    ELSE va.status::text
-                END AS status
-            FROM vac_aplicacao va
-            LEFT JOIN tipo_vacina tv ON tv.cd_vacina = va.cd_vacina
-            LEFT JOIN calendario cale ON cale.cd_calendario = va.cd_estrategia
-            WHERE va.cd_usu_cadsus = ?
-              AND va.status <> 2
-            ORDER BY va.dt_aplicacao ASC
-            """;
+        SELECT
+            va.cd_vac_aplicacao AS id_aplicacao,
+            va.dt_aplicacao::date AS data_aplicacao,
+            COALESCE(tv.ds_vacina, va.ds_vacina) AS vacina,
+            CASE 
+                WHEN va.cd_doses IN (1,2,3,4) THEN va.cd_doses::text || 'ª Dose'
+                WHEN va.cd_doses IN (5,9)     THEN 'Dose Única'
+                WHEN va.cd_doses IN (6,38)    THEN 'Reforço'
+                WHEN va.cd_doses = 7          THEN '1º Reforço'
+                WHEN va.cd_doses = 8          THEN '2º Reforço'
+                ELSE COALESCE(va.cd_doses::text, '-')
+            END AS dose,
+            cale.ds_calendario AS estrategia,
+            COALESCE(fab.ds_fabricante, prod.fabricante_esus) AS laboratorio,
+            emp.fantasia AS estabelecimento,
+            prof.nm_profissional AS profissional
+        FROM public.vac_aplicacao va
+        LEFT JOIN public.tipo_vacina tv ON tv.cd_vacina = va.cd_vacina
+        LEFT JOIN public.calendario cale ON cale.cd_calendario = va.cd_calendario
+        LEFT JOIN public.produto_vacina pv ON pv.cd_produto_vacina = va.cd_produto_vacina
+        LEFT JOIN public.produtos prod ON prod.cod_pro = pv.cod_pro
+        LEFT JOIN public.fabricante_medicamento fab ON fab.cd_fabricante = prod.cd_fabricante
+        LEFT JOIN public.empresa emp ON emp.empresa = va.empresa
+        LEFT JOIN public.profissional prof ON prof.cd_profissional = va.cd_profissional_aplicacao
+        WHERE va.cd_usu_cadsus = ?
+          AND va.status IN (0, 1, 3)
+        ORDER BY va.dt_aplicacao DESC
+        """;
 
     private static final String VACINA_DETALHE_POR_APLICACAO_SQL = """
             SELECT

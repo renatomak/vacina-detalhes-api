@@ -36,5 +36,8 @@ public class VacinaRaw {
     public String unidadeCnes;
     public String rndsSituacao;
     public String rndsUuid;
+    public String vacina;
+    public String laboratorio;
+    public String estabelecimento;
+    public String profissional;
 }
-

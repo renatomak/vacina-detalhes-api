@@ -40,7 +40,7 @@ class CoreClassesCoverageTest {
             "123456789012345", "Maria Social", "Brasil", "GO", "Goiania", "Branca", "Nenhuma", "62988887777", "maria@email.com", endereco, "Brasil"
         );
         PacienteResumoDTO pacienteResumo = new PacienteResumoDTO(1L, "Maria", "123", LocalDate.of(1990, 1, 1));
-        VacinaResumoDTO vacinaResumo = new VacinaResumoDTO(1L, LocalDate.of(2024, 1, 1), "Covid", "Reforco", "Adulto", "Aplicada");
+        VacinaResumoDTO vacinaResumo = new VacinaResumoDTO(1L, LocalDate.of(2024, 1, 1), "Covid", "Reforco", "Adulto", "Pfizer", "UBS Central", "Joao Profissional");
         VacinaDetalheDTO vacinaDetalhe = new VacinaDetalheDTO(
                 1L, 1L, 1, "1a Dose", "Adulto", "Covid", "Comirnaty", "L123",
                 LocalDate.of(2025, 1, 1), "Pfizer", "123", LocalDate.of(2024, 1, 1),
@@ -60,11 +60,10 @@ class CoreClassesCoverageTest {
 
         Assertions.assertEquals("Goiania", paciente.endereco().cidade());
         Assertions.assertEquals("Maria", pacienteResumo.nome());
-        Assertions.assertEquals("Covid", vacinaResumo.nomeVacina());
+        Assertions.assertEquals("Covid", vacinaResumo.vacina());
         Assertions.assertEquals("uuid", vacinaDetalhe.rndsUuid());
         Assertions.assertEquals("uuid", vacinaAplicacao.uuidRnds());
         Assertions.assertEquals("erro", badRequest.getMessage());
         Assertions.assertEquals("nao encontrado", notFound.getMessage());
     }
 }
-

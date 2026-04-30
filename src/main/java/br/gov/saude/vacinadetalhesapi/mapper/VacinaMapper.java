@@ -17,6 +17,12 @@ public interface VacinaMapper {
     VacinaDetalheDTO toVacinaDetalheDTO(VacinaRaw raw);
 
     @Mapping(target = "dataAplicacao", source = "dataAplicacao", qualifiedByName = "toLocalDate")
+    @Mapping(target = "vacina", source = "vacina")
+    @Mapping(target = "dose", source = "dose")
+    @Mapping(target = "estrategia", source = "estrategia")
+    @Mapping(target = "laboratorio", source = "laboratorio")
+    @Mapping(target = "estabelecimento", source = "estabelecimento")
+    @Mapping(target = "profissional", source = "profissional")
     VacinaResumoDTO toVacinaResumoDTO(VacinaRaw raw);
 
     @Named("toLocalDate")
@@ -42,4 +48,3 @@ public interface VacinaMapper {
         return ((Number) value).intValue();
     }
 }
-

@@ -5,11 +5,11 @@ import java.time.LocalDate;
 public record VacinaResumoDTO(
         Long idAplicacao,
         LocalDate dataAplicacao,
-        String nomeVacina,
+        String vacina,
         String dose,
         String estrategia,
-        String status
+        String laboratorio,
+        String estabelecimento,
+        String profissional
 ) {
 }
-
-

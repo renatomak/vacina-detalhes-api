@@ -14,10 +14,12 @@ public class VacinaRowMapper {
         return (rs, rowNum) -> new VacinaResumoDTO(
                 rs.getLong("id_aplicacao"),
                 toLocalDate(rs.getObject("data_aplicacao")),
-                rs.getString("nome_vacina"),
+                rs.getString("vacina"),
                 rs.getString("dose"),
                 rs.getString("estrategia"),
-                rs.getString("status")
+                rs.getString("laboratorio"),
+                rs.getString("estabelecimento"),
+                rs.getString("profissional")
         );
     }
 
@@ -83,5 +85,3 @@ public class VacinaRowMapper {
         return ((Number) value).intValue();
     }
 }
-
-
