@@ -141,7 +141,17 @@ class PacienteServiceImplTest {
                 "Jose",
                 "01/01/1990",
                 "62999999999",
-                new EnderecoDTO(null, null, null, null, null, null, null, null, null, null)
+                "123456789012345",
+                "Maria Social",
+                "Brasil",
+                "GO",
+                "Goiania",
+                "Branca",
+                "Nenhuma",
+                "62988887777",
+                "maria@email.com",
+                new EnderecoDTO(null, null, null, null, null, null, null, null, null, null),
+                "Brasil"
         );
     }
 }

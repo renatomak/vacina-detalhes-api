@@ -11,6 +11,15 @@ public class PacienteRaw {
     public String nomePai;
     public LocalDate dataNascimento;
     public String telefone;
+    public String cartaoSus;
+    public String nomeSocial;
+    public String paisNascimento;
+    public String ufNascimento;
+    public String municipioNascimento;
+    public String raca;
+    public String etnia;
+    public String telefoneContato;
+    public String email;
     public String keyword;
     public String tipoLogradouro;
     public String logradouro;
@@ -21,5 +30,6 @@ public class PacienteRaw {
     public Long cidadeId;
     public String cidade;
     public String uf;
+    public String paisEndereco;
 }
 

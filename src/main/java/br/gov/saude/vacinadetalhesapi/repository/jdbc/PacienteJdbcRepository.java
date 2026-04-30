@@ -17,20 +17,47 @@ import java.util.Optional;
 public class PacienteJdbcRepository implements PacienteRepository {
 
     private static final String PACIENTE_DETALHE_SQL = """
-            SELECT
-                p.cd_usu_cadsus AS id, p.nm_usuario AS nome, p.cpf, p.sg_sexo AS sexo,
-                p.nm_mae AS nome_mae, p.nm_pai AS nome_pai, p.dt_nascimento AS data_nascimento,
-                p.nr_telefone AS telefone, e.keyword, tl.ds_tipo_logradouro AS tipo_logradouro,
-                e.nm_logradouro AS logradouro, e.nm_comp_logradouro AS complemento,
-                e.nr_logradouro AS numero, e.cep, e.nm_bairro AS bairro,
-                c.cod_cid AS cidade_id, c.descricao AS cidade, uf.sigla AS uf
-            FROM usuario_cadsus p
-            INNER JOIN endereco_usuario_cadsus e ON p.cd_endereco = e.cd_endereco
-            INNER JOIN cidade c ON e.cod_cid = c.cod_cid
-            INNER JOIN estado uf ON c.cod_est = uf.cod_est
-            INNER JOIN tipo_logradouro_cadsus tl ON e.cd_tipo_logradouro = tl.cd_tipo_logradouro
-            WHERE %s
-            """;
+        SELECT
+            p.cd_usu_cadsus AS id,
+            p.cd_usu_cadsus AS cartao_sus,
+            p.nm_usuario AS nome,
+            p.apelido AS nome_social,
+            p.cpf,
+            p.sg_sexo AS sexo,
+            p.nm_mae AS nome_mae,
+            p.nm_pai AS nome_pai,
+            p.dt_nascimento AS data_nascimento,
+            pais_nas.ds_pais AS pais_nascimento,
+            uf_nas.sigla AS uf_nascimento,
+            cid_nas.descricao AS municipio_nascimento,
+            r.ds_raca AS raca,
+            et.ds_etnia AS etnia,
+            p.nr_telefone AS telefone,
+            p.nr_telefone_2 AS telefone_contato,
+            p.email,
+            e.keyword,
+            tl.ds_tipo_logradouro AS tipo_logradouro,
+            e.nm_logradouro AS logradouro,
+            e.nm_comp_logradouro AS complemento,
+            e.nr_logradouro AS numero,
+            e.cep,
+            e.nm_bairro AS bairro,
+            c.cod_cid AS cidade_id,
+            c.descricao AS cidade,
+            uf.sigla AS uf,
+            'Brasil' AS pais_endereco
+        FROM public.usuario_cadsus p
+        INNER JOIN public.endereco_usuario_cadsus e ON p.cd_endereco = e.cd_endereco
+        INNER JOIN public.cidade c ON e.cod_cid = c.cod_cid
+        INNER JOIN public.estado uf ON c.cod_est = uf.cod_est
+        INNER JOIN public.tipo_logradouro_cadsus tl ON e.cd_tipo_logradouro = tl.cd_tipo_logradouro
+        LEFT JOIN public.cidade cid_nas ON p.cod_cid_nascimento = cid_nas.cod_cid
+        LEFT JOIN public.estado uf_nas ON cid_nas.cod_est = uf_nas.cod_est
+        LEFT JOIN public.nacionalidade pais_nas ON p.cd_pais_nascimento = pais_nas.cd_pais
+        LEFT JOIN public.raca r ON p.cd_raca = r.cd_raca
+        LEFT JOIN public.etnia_indigena et ON p.cd_etnia = et.cd_etnia
+        WHERE %s
+        """;
 
     private static final String PACIENTE_RESUMO_POR_NOME_SQL = """
             SELECT cd_usu_cadsus AS id, nm_usuario AS nome, cpf, dt_nascimento AS data_nascimento
@@ -50,7 +77,8 @@ public class PacienteJdbcRepository implements PacienteRepository {
 
     @Override
     public Optional<PacienteDTO> buscarDetalhePorCpf(String cpf) {
-        return buscarUm(PACIENTE_DETALHE_SQL.formatted("p.cpf = ?"), cpf);
+        String cpfLimpo = cpf.replaceAll("[^0-9]", "");
+        return buscarUm(PACIENTE_DETALHE_SQL.formatted("p.cpf = ?"), cpfLimpo);
     }
 
     @Override
@@ -81,7 +109,9 @@ public class PacienteJdbcRepository implements PacienteRepository {
     private PacienteRaw mapRowToPacienteRaw(ResultSet rs, int rowNum) throws SQLException {
         PacienteRaw raw = new PacienteRaw();
         raw.id = rs.getLong("id");
+        raw.cartaoSus = rs.getString("cartao_sus");
         raw.nome = rs.getString("nome");
+        raw.nomeSocial = rs.getString("nome_social");
         raw.cpf = rs.getString("cpf");
         raw.sexo = rs.getString("sexo");
         raw.nomeMae = rs.getString("nome_mae");
@@ -90,7 +120,14 @@ public class PacienteJdbcRepository implements PacienteRepository {
         java.sql.Date data = rs.getObject("data_nascimento", java.sql.Date.class);
         raw.dataNascimento = (data != null) ? data.toLocalDate() : null;
 
+        raw.paisNascimento = rs.getString("pais_nascimento");
+        raw.ufNascimento = rs.getString("uf_nascimento");
+        raw.municipioNascimento = rs.getString("municipio_nascimento");
+        raw.raca = rs.getString("raca");
+        raw.etnia = rs.getString("etnia");
         raw.telefone = rs.getString("telefone");
+        raw.telefoneContato = rs.getString("telefone_contato");
+        raw.email = rs.getString("email");
         raw.keyword = rs.getString("keyword");
         raw.tipoLogradouro = rs.getString("tipo_logradouro");
         raw.logradouro = rs.getString("logradouro");
@@ -101,6 +138,7 @@ public class PacienteJdbcRepository implements PacienteRepository {
         raw.cidadeId = rs.getLong("cidade_id");
         raw.cidade = rs.getString("cidade");
         raw.uf = rs.getString("uf");
+        raw.paisEndereco = rs.getString("pais_endereco");
         return raw;
     }
 }

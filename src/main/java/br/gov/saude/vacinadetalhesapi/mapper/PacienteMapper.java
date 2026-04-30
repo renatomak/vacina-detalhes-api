@@ -17,6 +17,16 @@ public interface PacienteMapper {
     @Mapping(target = "dataNascimento", expression = "java(br.gov.saude.vacinadetalhesapi.util.FormatadorUtil.formatarData(raw.dataNascimento))")
     @Mapping(target = "cpf", expression = "java(br.gov.saude.vacinadetalhesapi.util.FormatadorUtil.formatarCpf(raw.cpf))")
     @Mapping(target = "telefone", expression = "java(br.gov.saude.vacinadetalhesapi.util.FormatadorUtil.formatarTelefone(raw.telefone))")
+    @Mapping(target = "cartaoSus", source = "cartaoSus")
+    @Mapping(target = "nomeSocial", source = "nomeSocial")
+    @Mapping(target = "paisNascimento", source = "paisNascimento")
+    @Mapping(target = "ufNascimento", source = "ufNascimento")
+    @Mapping(target = "municipioNascimento", source = "municipioNascimento")
+    @Mapping(target = "raca", source = "raca")
+    @Mapping(target = "etnia", source = "etnia")
+    @Mapping(target = "telefoneContato", source = "telefoneContato")
+    @Mapping(target = "email", source = "email")
+    @Mapping(target = "paisEndereco", source = "paisEndereco")
     PacienteDTO toPacienteDTO(PacienteRaw raw);
 
     // ...

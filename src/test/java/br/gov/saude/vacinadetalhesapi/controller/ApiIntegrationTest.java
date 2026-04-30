@@ -108,7 +108,17 @@ class ApiIntegrationTest {
         return new PacienteDTO(
             1L, "Maria", "12345678901", "F", "Ana", "Jose",
             "01/01/1990", "62999999999",
-            new EnderecoDTO("kw", "Rua", "A", "Casa", "10", "70000", "Centro", 1L, "Goiania", "GO")
+            "123456789012345",
+            "Maria Social",
+            "Brasil",
+            "GO",
+            "Goiania",
+            "Branca",
+            "Nenhuma",
+            "62988887777",
+            "maria@email.com",
+            new EnderecoDTO("kw", "Rua", "A", "Casa", "10", "70000", "Centro", 1L, "Goiania", "GO"),
+            "Brasil"
         );
     }
 

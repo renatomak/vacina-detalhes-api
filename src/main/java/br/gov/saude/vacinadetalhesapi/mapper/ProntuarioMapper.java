@@ -37,8 +37,7 @@ public interface ProntuarioMapper {
                 registrosMap.put(nrAtendimento, new ArrayList<>());
             }
 
-            // Adiciona o registro clínico apenas se houver data e conteúdo (evita registros vazios de cabeçalhos de internação)
-            if (raw.getRegistroData() != null) {
+            if (isRegistroValido(raw)) {
                 registrosMap.get(nrAtendimento).add(toRegistroDTO(raw));
             }
         }
@@ -84,7 +83,7 @@ public interface ProntuarioMapper {
             case 1 -> "Avaliacao";
             case 2 -> "Evolucao";
             case 6 -> "Exame";
-            default -> "Outro";
+            default -> null;
         };
     }
 
@@ -94,7 +93,14 @@ public interface ProntuarioMapper {
             case 1 -> new ConteudoDTO(conteudo, null, null);
             case 2 -> new ConteudoDTO(null, conteudo, null);
             case 6 -> new ConteudoDTO(null, null, conteudo);
-            default -> new ConteudoDTO(null, null, null);
+            default -> null;
         };
+    }
+
+    default boolean isRegistroValido(ProntuarioRaw raw) {
+        if (raw == null) return false;
+
+        String tipo = mapTipoRegistro(raw.getRegistroTipoId());
+        return tipo != null && raw.getRegistroConteudo() != null && !raw.getRegistroConteudo().isBlank();
     }
 }
