@@ -1,21 +1,16 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
     hikari:
       maximum-pool-size: 5
       minimum-idle: 1
       connection-timeout: 30000
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
   sql:
     init:
       mode: always
-      schema-locations: classpath:data.sql
       data-locations: classpath:data.sql
 
 server:
@@ -32,4 +27,3 @@ springdoc:
     path: /swagger-ui.html
   api-docs:
     path: /v3/api-docs
-
