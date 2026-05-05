@@ -171,6 +171,38 @@
           }
         }
       ]
+    },
+    {
+      "name": "RAAS PSI",
+      "item": [
+        {
+          "name": "Listar Arquivos Gerados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/raas-psi/arquivos?competencia=&unidade_id=&unidade=&situacao=&page=&size=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "raas-psi",
+                "arquivos"
+              ],
+              "query": [
+                { "key": "competencia", "value": "", "description": "Competência para filtro (opcional)" },
+                { "key": "unidade_id", "value": "", "description": "ID da unidade para filtro (opcional)" },
+                { "key": "unidade", "value": "", "description": "Nome da unidade para filtro (opcional)" },
+                { "key": "situacao", "value": "", "description": "Situação para filtro (opcional)" },
+                { "key": "page", "value": "", "description": "Página para paginação (opcional)" },
+                { "key": "size", "value": "", "description": "Tamanho da página (opcional)" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ]
 }

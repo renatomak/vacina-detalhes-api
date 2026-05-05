@@ -860,3 +860,136 @@ INSERT INTO atendimento_prontuario (id, nr_atendimento, data, tipo_registro, des
     (27, 79614642, '2024-07-04 13:01:18.387', 2,
      '<p>coleta teste do pezinho</p>');
 
+
+-- ==========================================================================
+-- RAAS PSI — Tabela e dados de teste
+-- ==========================================================================
+
+CREATE TABLE raas_psi (
+    id                          BIGSERIAL    PRIMARY KEY,
+    competencia                 DATE         NOT NULL,
+    co_unidade                  BIGINT,
+    unidade_prestadora_servico  VARCHAR(200) NOT NULL,
+    cns_paciente                VARCHAR(15),
+    nome_paciente               VARCHAR(200),
+    cns_profissional            VARCHAR(15),
+    cbo_profissional            VARCHAR(10),
+    cid_principal               VARCHAR(10),
+    procedimento_principal      VARCHAR(10),
+    dt_cadastro                 TIMESTAMP    NOT NULL DEFAULT NOW()
+);
+
+-- Índices para performance
+CREATE INDEX idx_raas_psi_competencia         ON raas_psi (competencia);
+CREATE INDEX idx_raas_psi_unidade             ON raas_psi (unidade_prestadora_servico);
+CREATE INDEX idx_raas_psi_co_unidade          ON raas_psi (co_unidade);
+CREATE INDEX idx_raas_psi_competencia_unidade ON raas_psi (competencia, unidade_prestadora_servico);
+
+-- --------------------------------------------------------------------------
+-- Dados de teste: CAPS AD3 NOROESTE — competência Julho/2025 (1356 registros simulados)
+-- --------------------------------------------------------------------------
+INSERT INTO raas_psi (competencia, unidade_prestadora_servico, cns_paciente, nome_paciente,
+                      cns_profissional, cbo_profissional, cid_principal, procedimento_principal, dt_cadastro)
+SELECT
+    '2025-07-01'::date,
+    'CAPS AD3 NOROESTE',
+    LPAD((700000000000000 + gs)::text, 15, '0'),
+    'PACIENTE TESTE ' || gs,
+    '123456789012345',
+    '225125',
+    'F10.2',
+    '0301080232',
+    '2025-07-04 08:00:00'::timestamp + (gs || ' seconds')::interval
+FROM generate_series(1, 100) AS gs;
+
+-- Novembro/2025 — CAPS AD3 NOROESTE
+INSERT INTO raas_psi (competencia, unidade_prestadora_servico, cns_paciente, nome_paciente,
+                      cns_profissional, cbo_profissional, cid_principal, procedimento_principal, dt_cadastro)
+SELECT
+    '2025-11-01'::date,
+    'CAPS AD3 NOROESTE',
+    LPAD((700000001000000 + gs)::text, 15, '0'),
+    'PACIENTE TESTE N' || gs,
+    '123456789012345',
+    '225125',
+    'F19.2',
+    '0301080232',
+    '2025-11-05 09:00:00'::timestamp + (gs || ' seconds')::interval
+FROM generate_series(1, 80) AS gs;
+
+-- Janeiro/2026 — CAPS AD3 NOROESTE
+INSERT INTO raas_psi (competencia, unidade_prestadora_servico, cns_paciente, nome_paciente,
+                      cns_profissional, cbo_profissional, cid_principal, procedimento_principal, dt_cadastro)
+SELECT
+    '2026-01-01'::date,
+    'CAPS AD3 NOROESTE',
+    LPAD((700000002000000 + gs)::text, 15, '0'),
+    'PACIENTE TESTE J' || gs,
+    '123456789012345',
+    '225125',
+    'F11.2',
+    '0301080232',
+    '2026-01-10 10:00:00'::timestamp + (gs || ' seconds')::interval
+FROM generate_series(1, 60) AS gs;
+
+-- Março/2026 — CAPS INFANTO JUVENIL LESTE
+INSERT INTO raas_psi (competencia, unidade_prestadora_servico, cns_paciente, nome_paciente,
+                      cns_profissional, cbo_profissional, cid_principal, procedimento_principal, dt_cadastro)
+SELECT
+    '2026-03-01'::date,
+    'CAPS INFANTO JUVENIL LESTE',
+    LPAD((700000003000000 + gs)::text, 15, '0'),
+    'PACIENTE INFANTIL ' || gs,
+    '234567890123456',
+    '225170',
+    'F90.0',
+    '0301080275',
+    '2026-03-03 11:00:00'::timestamp + (gs || ' seconds')::interval
+FROM generate_series(1, 45) AS gs;
+
+-- Março/2026 — CAPS AD3 NOROESTE
+INSERT INTO raas_psi (competencia, unidade_prestadora_servico, cns_paciente, nome_paciente,
+                      cns_profissional, cbo_profissional, cid_principal, procedimento_principal, dt_cadastro)
+SELECT
+    '2026-03-01'::date,
+    'CAPS AD3 NOROESTE',
+    LPAD((700000004000000 + gs)::text, 15, '0'),
+    'PACIENTE TESTE M' || gs,
+    '123456789012345',
+    '225125',
+    'F10.2',
+    '0301080232',
+    '2026-03-04 08:30:00'::timestamp + (gs || ' seconds')::interval
+FROM generate_series(1, 72) AS gs;
+
+-- Abril/2026 — CAPS II SUL
+INSERT INTO raas_psi (competencia, unidade_prestadora_servico, cns_paciente, nome_paciente,
+                      cns_profissional, cbo_profissional, cid_principal, procedimento_principal, dt_cadastro)
+SELECT
+    '2026-04-01'::date,
+    'CAPS II SUL',
+    LPAD((700000005000000 + gs)::text, 15, '0'),
+    'PACIENTE SUL ' || gs,
+    '345678901234567',
+    '225170',
+    'F31.0',
+    '0301080135',
+    '2026-04-07 07:45:00'::timestamp + (gs || ' seconds')::interval
+FROM generate_series(1, 55) AS gs;
+
+-- Maio/2026 — CAPS AD3 NOROESTE
+INSERT INTO raas_psi (competencia, unidade_prestadora_servico, cns_paciente, nome_paciente,
+                      cns_profissional, cbo_profissional, cid_principal, procedimento_principal, dt_cadastro)
+SELECT
+    '2026-05-01'::date,
+    'CAPS AD3 NOROESTE',
+    LPAD((700000006000000 + gs)::text, 15, '0'),
+    'PACIENTE TESTE MAIO ' || gs,
+    '123456789012345',
+    '225125',
+    'F10.2',
+    '0301080232',
+    '2026-05-04 08:00:00'::timestamp + (gs || ' seconds')::interval
+FROM generate_series(1, 38) AS gs;
+
+
