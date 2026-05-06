@@ -4,7 +4,6 @@ import br.gov.saude.goiania.saude.api.dto.EnderecoDTO;
 import br.gov.saude.goiania.saude.api.dto.PacienteDTO;
 import br.gov.saude.goiania.saude.api.dto.PacienteResumoDTO;
 import br.gov.saude.goiania.saude.api.dto.VacinaDetalheDTO;
-import br.gov.saude.vacinadetalhesapi.dto.*;
 import br.gov.saude.goiania.saude.api.service.PacienteService;
 import br.gov.saude.goiania.saude.api.service.VacinaService;
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +24,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

@@ -14,9 +14,9 @@ public interface PacienteMapper {
 
     @Mapping(target = "sexo", source = "sexo", qualifiedByName = "converterSexo")
     @Mapping(target = "endereco", expression = "java(toEnderecoDTO(raw))")
-    @Mapping(target = "dataNascimento", expression = "java(br.gov.saude.vacinadetalhesapi.util.FormatadorUtil.formatarData(raw.dataNascimento))")
-    @Mapping(target = "cpf", expression = "java(br.gov.saude.vacinadetalhesapi.util.FormatadorUtil.formatarCpf(raw.cpf))")
-    @Mapping(target = "telefone", expression = "java(br.gov.saude.vacinadetalhesapi.util.FormatadorUtil.formatarTelefone(raw.telefone))")
+    @Mapping(target = "dataNascimento", expression = "java(br.gov.saude.goiania.saude.api.util.FormatadorUtil.formatarData(raw.dataNascimento))")
+    @Mapping(target = "cpf", expression = "java(br.gov.saude.goiania.saude.api.util.FormatadorUtil.formatarCpf(raw.cpf))")
+    @Mapping(target = "telefone", expression = "java(br.gov.saude.goiania.saude.api.util.FormatadorUtil.formatarTelefone(raw.telefone))")
     @Mapping(target = "cartaoSus", source = "cartaoSus")
     @Mapping(target = "nomeSocial", source = "nomeSocial")
     @Mapping(target = "paisNascimento", source = "paisNascimento")

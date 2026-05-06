@@ -1,7 +1,6 @@
 package br.gov.saude.goiania.saude.api.mapper;
 
 import br.gov.saude.goiania.saude.api.dto.*;
-import br.gov.saude.vacinadetalhesapi.dto.*;
 import br.gov.saude.goiania.saude.api.repository.ProntuarioRaw;
 import org.mapstruct.*;
 import java.util.*;
