@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: vacina-detalhes-api
+    name: goiania-saude-api
     env: docker
     plan: free
     autoDeploy: true

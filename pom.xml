@@ -11,9 +11,9 @@
         <relativePath/> </parent>
 
     <groupId>br.gov.saude</groupId>
-    <artifactId>vacina-detalhes-api</artifactId>
+    <artifactId>goiania_saude_api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>vacina-detalhes-api</name>
+    <name>goiania_saude_api</name>
     <description>Consulta de Vacinas - Goiânia Saúde</description>
 
     <properties>

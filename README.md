@@ -115,20 +115,20 @@ java -jar target/*.jar --spring.profiles.active=local
 ### 1) Build da imagem
 
 ```bash
-docker build -t vacinas-api:latest .
+docker build -t goiania-saude-api:latest .
 ```
 
 ### 2) Run do container
 
 ```bash
-docker run -d --name vacinas-api \
+docker run -d --name goiania-saude-api \
   -p 8083:8083 \
   -e PORT=8083 \
   -e DB_URL="jdbc:postgresql://SEU_HOST:5432/SEU_BANCO" \
   -e DB_USERNAME="SEU_USUARIO" \
   -e DB_PASSWORD="SUA_SENHA" \
   -e DB_POOL_MAX_SIZE=5 \
-  vacinas-api:latest
+  goiania-saude-api:latest
 ```
 
 ### 3) Validacao
@@ -174,4 +174,3 @@ Com o servico em status **Live**, valide:
 curl https://SEU-SERVICO.onrender.com/v3/api-docs
 curl https://SEU-SERVICO.onrender.com/swagger-ui.html
 ```
-
