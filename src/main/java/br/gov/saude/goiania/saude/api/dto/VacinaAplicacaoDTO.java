@@ -1,0 +1,38 @@
+package br.gov.saude.goiania.saude.api.dto;
+
+public record VacinaAplicacaoDTO(
+    Long   nrSeq,
+    String tipoDoseCod,
+    String nomeVacina,
+    String dsVacinaDetalhe,
+    String dose,
+    String estrategia,
+    String lote,
+    String dtValidadeLote,
+    String nomeFabricante,
+    String cnpjFabricante,
+    String dtAplicacao,
+    String nomeProfissional,
+    String conselhoProfissional,
+    String nrRegistroConselho,
+    String cnsProfissional,
+    String unidadeAplicacao,
+    String cnesUnidade,
+    String localAtendimento,
+    String turno,
+    String grupoAtendimento,
+    String flagGestante,
+    String flagPuerpera,
+    String flagHistorico,
+    String flagForaEsquema,
+    String viajante,
+    String novoFrasco,
+    String viaAdministracao,
+    String localAplicacaoCorpo,
+    String observacao,
+    String statusAplicacao,
+    String nrAtendimento,
+    String integracaoRnds,
+    String uuidRnds
+) {}
+
